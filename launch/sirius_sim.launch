@@ -30,7 +30,9 @@
 
 	-->
 
-	<!-- launch rosbag player -->
+	<!-- launch rosbag player 
+	the number after the -r flag indicates replay time
+	faster replay time may lead to OctoMap having to ignore messages-->
 	<node pkg="rosbag" type="play" name="player" output="screen" 
 		args="--clock -r 10 --wait-for-subscribers --skip-empty=30 '$(find mapping)/rosbags/$(arg data_name).bag'"/>
 
@@ -47,16 +49,13 @@
 
 		<!-- maximum range to integrate (speedup!) -->
 		<param name="sensor_model/max_range" value="20.0"/>
-
-
-		<!-- <param name="point_cloud_min_z" value="-1000"/>
-		<param name="point_cloud_max_z" value="1000"/> -->
 		
 		<param name="latch" value="false"/>
 		
+		<!-- NOTE: this parameter does not seem to work correctly. 
+		A temporary solution has been implemented in rosbag_from_csv.py -->
 		<param name="pointcloud_max_z" value="1000.0"/>
 		<param name="pointcloud_min_z" value="-1000.0"/>
-
 
 		<param name="filter_ground" value="false"/>
 
