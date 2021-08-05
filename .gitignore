@@ -1,0 +1,3 @@
+# ignore rosbags anywhere in the tree
+# the size of rosbags will likely cause trouble with git
+*.bag
