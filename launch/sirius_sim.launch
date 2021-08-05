@@ -1,0 +1,71 @@
+<launch>
+	<arg name="data_name" default="r20210612_231302_SS02_depth_servo"/>
+
+	<!-- alternative default data_name values
+
+		r20210612_231302_SS02_depth_servo                    	# 0
+        r20210613_045224_SS03_TF_NPZ_04                    		# 1
+        r20210613_050724_SS03_TF_NPZ_04                      	# 2
+        r20210613_055428_SS03_TF_NPZ_04                      	# 3
+        r20210613_064305_SS03_TF_NPZ_04                      	# 4
+        r20210613_233359_SS04_TF_NPZ_07                      	# 5
+        r20210614_000137_SS04_TF_NPZ_07                      	# 6
+        r20210614_034824_SS05_TF_NPZ_01                      	# 7
+        r20210614_062740_SS06_TF_NPZ_02                      	# 8
+        r20210614_222648_SS07_TF_NPZ_06                      	# 9
+        r20210615_004541_SS08_TF_NPZ_06_second_half          	# 10
+        r20210615_024126_SS09_TF_NPZ_03                      	# 11
+        r20210615_054656_SS10_TF_NPZ_08                      	# 12
+        r20210615_222253_SS11_TF_Ref_N_1                     	# 13
+        r20210616_004810_SS12_TF_Ref_N_1_second_half         	# 14
+        r20210616_023257_SS13_TF_MUZ_01                      	# 15
+        r20210616_050126_SS14_TF_MUZ_02                     	# 16
+        r20210616_215942_SS15_TF_Ref_C_1                     	# 17
+        r20210616_231740_SS16_TF_Ref_C_1_second_half         	# 18
+        r20210616_234712_SS16_TF_Ref_C_1_second_half         	# 19
+        r20210617_010409_SS17_TF_Ref_C_1_third               	# 20
+        r20210617_033152_SS18_TF_NPZ_04_reversed             	# 21
+        r20210617_050102_SS19_TF_NPZ_04_reversed_second_half  	# 22
+		scott_reef												# 23
+
+	-->
+
+	<!-- launch rosbag player -->
+	<node pkg="rosbag" type="play" name="player" output="screen" 
+		args="--clock -r 10 --wait-for-subscribers --skip-empty=30 '$(find mapping)/rosbags/$(arg data_name).bag'"/>
+
+	<!-- launch octomap server -->
+	<node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+	
+		<!-- run node in simulation time -->
+		<param name="use_sim_time" value="true"/>
+
+		<param name="resolution" value="0.1"/>
+
+		<!-- fixed map frame (set to 'map' if SLAM or localization running!) -->
+		<param name="frame_id" type="string" value="/map"/>
+
+		<!-- maximum range to integrate (speedup!) -->
+		<param name="sensor_model/max_range" value="20.0"/>
+
+
+		<!-- <param name="point_cloud_min_z" value="-1000"/>
+		<param name="point_cloud_max_z" value="1000"/> -->
+		
+		<param name="latch" value="false"/>
+		
+		<param name="pointcloud_max_z" value="1000.0"/>
+		<param name="pointcloud_min_z" value="-1000.0"/>
+
+
+		<param name="filter_ground" value="false"/>
+
+		<!-- data source to integrate (PointCloud2) -->
+		<remap from="cloud_in" to="/cloud"/>
+
+	</node>
+
+	<!-- launch save launcher to save bt file after simulation -->
+	<node pkg="mapping" type="save_helper.py" name="save_helper" output="screen"/>
+
+</launch>
